@@ -38,15 +38,19 @@ class Program
             "PILHA",
             "BOLSA",
             "FUMAR",
-
-
         };
 
-        // Loop externo responsável por reiniciar uma nova partida caso o jogador queira jogar novamente
+        // Loop externo responsável por manter o jogo funcionando enquanto o jogador quiser jogar novamente
         while (true)
         {
             // Sorteia uma palavra aleatória da lista
             string palavraSecreta = SortearPalavra(palavras);
+
+            // Matriz que armazena todas as tentativas da partida atual para exibir o histórico em formato de grade
+            string[] historicoTentativas = new string[QuantidadeMaximaTentativas];
+
+            // Matriz que armazena as cores correspondentes de cada tentativa digitada
+            ConsoleColor[][] historicoCores = new ConsoleColor[QuantidadeMaximaTentativas][];
 
             // Exibe título e instruções do jogo
             ExibirCabecalho();
@@ -55,16 +59,34 @@ class Program
             bool jogadorAcertou = false;
 
             // Loop principal do jogo (controle de tentativas)
-            for (int tentativaAtual = 1; tentativaAtual <= QuantidadeMaximaTentativas; tentativaAtual++)
+            for (int tentativaAtual = 0; tentativaAtual < QuantidadeMaximaTentativas; tentativaAtual++)
             {
+                // Atualização do console antes de cada jogada para mostrar o tabuleiro sempre renovado
+                ExibirCabecalho();
+
+                // Exibe todas as tentativas já realizadas em formato de grade estilo Wordle
+                ExibirHistoricoTentativas(historicoTentativas, historicoCores);
+
                 Console.WriteLine();
-                Console.WriteLine($"Tentativa {tentativaAtual} de {QuantidadeMaximaTentativas}");
+                Console.WriteLine($"Tentativa {tentativaAtual + 1} de {QuantidadeMaximaTentativas}");
 
                 // Obtém uma tentativa válida do usuário
                 string tentativa = ObterTentativaValida();
 
-                // Exibe o resultado colorido da tentativa
-                ExibirTentativaColorida(tentativa, palavraSecreta);
+                // Avalia a tentativa e guarda as cores para exibir no histórico
+                ConsoleColor[] coresTentativa = AvaliarTentativa(tentativa, palavraSecreta);
+
+                // Armazena a tentativa digitada no histórico da partida
+                historicoTentativas[tentativaAtual] = tentativa;
+
+                // Armazena as cores da tentativa para desenhar os quadrados coloridos depois
+                historicoCores[tentativaAtual] = coresTentativa;
+
+                // Atualização do console após a jogada para mostrar imediatamente a nova linha preenchida no tabuleiro
+                ExibirCabecalho();
+
+                // Exibe novamente a grade completa com a tentativa recém-digitada
+                ExibirHistoricoTentativas(historicoTentativas, historicoCores);
 
                 // Verifica condição de vitória
                 if (tentativa == palavraSecreta)
@@ -128,8 +150,10 @@ class Program
         Console.WriteLine("Amarelo escuro  = letra existe, mas em outra posição");
         Console.WriteLine("Verde escuro    = letra correta na posição correta");
         Console.WriteLine();
-        Console.WriteLine("Formato visual:");
-        Console.WriteLine("[ A ] = quadrado da letra avaliada");
+
+        // Novo bloco explicativo para informar que a interface usa quadrados coloridos no estilo Wordle
+        Console.WriteLine("Tabuleiro:");
+        Console.WriteLine("Cada letra será exibida dentro de um quadrado colorido.");
     }
 
     // Sorteia uma palavra aleatória da lista
@@ -214,6 +238,52 @@ class Program
         }
 
         Console.WriteLine();
+    }
+
+    // Novo método responsável por exibir o tabuleiro completo com todas as tentativas realizadas até o momento
+    static void ExibirHistoricoTentativas(string[] historicoTentativas, ConsoleColor[][] historicoCores)
+    {
+        Console.WriteLine("Tabuleiro:");
+        Console.WriteLine();
+
+        // Percorre cada linha do tabuleiro
+        for (int i = 0; i < QuantidadeMaximaTentativas; i++)
+        {
+            // Se ainda não houver tentativa nessa linha, exibe quadrados vazios
+            if (historicoTentativas[i] == null)
+            {
+                for (int j = 0; j < TamanhoPalavra; j++)
+                {
+                    Console.Write("[   ] ");
+                }
+
+                Console.WriteLine();
+                continue;
+            }
+
+            // Recupera a tentativa e suas respectivas cores para desenhar a linha preenchida
+            string tentativa = historicoTentativas[i];
+            ConsoleColor[] cores = historicoCores[i];
+
+            // Percorre cada letra da linha atual
+            for (int j = 0; j < TamanhoPalavra; j++)
+            {
+                // Pinta o fundo do quadrado com a cor calculada na avaliação da tentativa
+                Console.BackgroundColor = cores[j];
+
+                // Usa branco para deixar a letra mais visível dentro do quadrado
+                Console.ForegroundColor = ConsoleColor.White;
+
+                // Exibe cada letra em formato de bloco
+                Console.Write($" {tentativa[j]} ");
+
+                // Reseta as cores após desenhar cada célula do tabuleiro
+                Console.ResetColor();
+                Console.Write(" ");
+            }
+
+            Console.WriteLine();
+        }
     }
 
     // Avalia a tentativa comparando com a palavra secreta
