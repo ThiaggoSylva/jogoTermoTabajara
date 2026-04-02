@@ -4,11 +4,15 @@ namespace Termo.ConsoleApp;
 
 class Program
 {
+    // Quantidade máxima de tentativas que o jogador possui
     const int QuantidadeMaximaTentativas = 5;
+    
+    // Tamanho fixo da palavra (regra do jogo)
     const int TamanhoPalavra = 5;
 
     static void Main(string[] args)
     {
+        // Lista de palavras possíveis (todas com 5 letras)
         string[] palavras =
         {
             "TERMO",
@@ -22,44 +26,54 @@ class Program
             "MOUSE",
             "VERDE"
         };
-
+        // Sorteia uma palavra aleatória da lista
         string palavraSecreta = SortearPalavra(palavras);
 
+        // Exibe título e instruções do jogo
         ExibirCabecalho();
 
+        // Loop principal do jogo (controle de tentativas)
         for (int tentativaAtual = 1; tentativaAtual <= QuantidadeMaximaTentativas; tentativaAtual++)
         {
             Console.WriteLine();
             Console.WriteLine($"Tentativa {tentativaAtual} de {QuantidadeMaximaTentativas}");
 
+            // Obtém uma tentativa válida do usuário
             string tentativa = ObterTentativaValida();
 
+            // Exibe o resultado colorido da tentativa
             ExibirTentativaColorida(tentativa, palavraSecreta);
 
+            // Verifica condição de vitória
             if (tentativa == palavraSecreta)
             {
                 Console.WriteLine();
+
+                // Cor verde para indicar sucesso
                 Console.ForegroundColor = ConsoleColor.DarkGreen;
                 Console.WriteLine("Parabéns! Você acertou a palavra secreta!");
                 Console.ResetColor();
 
                 Console.WriteLine("Pressione ENTER para sair...");
                 Console.ReadLine();
-                return;
+                return; // Encerra o programa após vitória
             }
         }
 
+         // Caso o jogador use todas as tentativas sem acertar
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.WriteLine("Que pena! Você perdeu.");
         Console.ResetColor();
 
+        // Mostra a palavra correta
         Console.WriteLine($"A palavra secreta era: {palavraSecreta}");
         Console.WriteLine("Pressione ENTER para sair...");
         Console.ReadLine();
 
     }
 
+    // Exibe o cabeçalho e instruções do jogo
     static void ExibirCabecalho()
     {
         Console.Clear();
@@ -74,12 +88,15 @@ class Program
         Console.WriteLine("Verde escuro    = letra correta na posição correta");
     }
 
+    // Sorteia uma palavra aleatória da lista
     static string SortearPalavra(string[] palavras)
     {
         int indice = RandomNumberGenerator.GetInt32(0, palavras.Length);
         return palavras[indice];
     }
 
+    
+    // Obtém e valida a tentativa do usuário
     static string ObterTentativaValida()
     {
         while (true)
@@ -87,30 +104,35 @@ class Program
             Console.Write("Digite uma palavra de 5 letras: ");
             string? entrada = Console.ReadLine();
 
+            // Verifica se a entrada é vazia
             if (string.IsNullOrWhiteSpace(entrada))
             {
                 Console.WriteLine("Entrada inválida.");
                 continue;
             }
 
+            // Remove espaços e converte para maiúsculo
             string tentativa = entrada.Trim().ToUpper();
 
+            // Valida o tamanho da palavra
             if (tentativa.Length != TamanhoPalavra)
             {
                 Console.WriteLine("A palavra deve ter exatamente 5 letras.");
                 continue;
             }
 
+            // Valida se contém apenas letras
             if (!ContemSomenteLetras(tentativa))
             {
                 Console.WriteLine("Digite somente letras.");
                 continue;
             }
 
-            return tentativa;
+            return tentativa;// Retorna tentativa válida
         }
     }
 
+    // Verifica se a string contém apenas letras (sem números ou símbolos)
     static bool ContemSomenteLetras(string texto)
     {
         foreach (char c in texto)
@@ -122,17 +144,24 @@ class Program
         return true;
     }
 
-
+    // Exibe a tentativa com cores baseadas na avaliação
     static void ExibirTentativaColorida(string tentativa, string palavraSecreta)
     {
         Console.Write("Resultado: ");
 
+        // Avalia cada letra e retorna as cores correspondentes
         ConsoleColor[] cores = AvaliarTentativa(tentativa, palavraSecreta);
 
+        // Percorre cada letra da tentativa
         for (int i = 0; i < tentativa.Length; i++)
         {
+            // Define a cor da letra
             Console.ForegroundColor = cores[i];
+
+            // Exibe a letra
             Console.Write(tentativa[i]);
+
+            // Reseta a cor para não afetar o restante do console
             Console.ResetColor();
             Console.Write(" ");
         }
@@ -140,11 +169,16 @@ class Program
         Console.WriteLine();
     }
 
+    // Avalia a tentativa comparando com a palavra secreta
     static ConsoleColor[] AvaliarTentativa(string tentativa, string palavraSecreta)
     {
+        // Array que guarda as cores de cada letra
         ConsoleColor[] cores = new ConsoleColor[TamanhoPalavra];
+
+        // Controla quais letras da palavra secreta já foram utilizadas
         bool[] letrasJaUsadas = new bool[TamanhoPalavra];
 
+        // Primeira passagem: verifica letras na posição correta (verde)
         for (int i = 0; i < TamanhoPalavra; i++)
         {
             if (tentativa[i] == palavraSecreta[i])
@@ -154,13 +188,16 @@ class Program
             }
         }
 
+         // Segunda passagem: verifica letras fora de posição (amarelo) ou inexistentes (vermelho)
         for (int i = 0; i < TamanhoPalavra; i++)
         {
+            // Se já foi marcada como verde, ignora
             if (cores[i] == ConsoleColor.DarkGreen)
                 continue;
 
             bool letraExisteEmOutraPosicao = false;
 
+            // Procura a letra em outra posição da palavra secreta
             for (int j = 0; j < TamanhoPalavra; j++)
             {
                 if (!letrasJaUsadas[j] && tentativa[i] == palavraSecreta[j])
@@ -171,11 +208,12 @@ class Program
                 }
             }
 
+             // Define a cor conforme o resultado
             if (letraExisteEmOutraPosicao)
                 cores[i] = ConsoleColor.DarkYellow;
             else
                 cores[i] = ConsoleColor.DarkRed;
         }
-            return cores;
+        return cores;
     }
 }
