@@ -140,4 +140,42 @@ class Program
         Console.WriteLine();
     }
 
+    static ConsoleColor[] AvaliarTentativa(string tentativa, string palavraSecreta)
+    {
+        ConsoleColor[] cores = new ConsoleColor[TamanhoPalavra];
+        bool[] letrasJaUsadas = new bool[TamanhoPalavra];
+
+        for (int i = 0; i < TamanhoPalavra; i++)
+        {
+            if (tentativa[i] == palavraSecreta[i])
+            {
+                cores[i] = ConsoleColor.DarkGreen;
+                letrasJaUsadas[i] = true;
+            }
+        }
+
+        for (int i = 0; i < TamanhoPalavra; i++)
+        {
+            if (cores[i] == ConsoleColor.DarkGreen)
+                continue;
+
+            bool letraExisteEmOutraPosicao = false;
+
+            for (int j = 0; j < TamanhoPalavra; j++)
+            {
+                if (!letrasJaUsadas[j] && tentativa[i] == palavraSecreta[j])
+                {
+                    letraExisteEmOutraPosicao = true;
+                    letrasJaUsadas[j] = true;
+                    break;
+                }
+            }
+
+            if (letraExisteEmOutraPosicao)
+                cores[i] = ConsoleColor.DarkYellow;
+            else
+                cores[i] = ConsoleColor.DarkRed;
+        }
+            return cores;
+    }
 }
