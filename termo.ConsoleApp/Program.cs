@@ -26,51 +26,77 @@ class Program
             "MOUSE",
             "VERDE"
         };
-        // Sorteia uma palavra aleatória da lista
-        string palavraSecreta = SortearPalavra(palavras);
 
-        // Exibe título e instruções do jogo
-        ExibirCabecalho();
-
-        // Loop principal do jogo (controle de tentativas)
-        for (int tentativaAtual = 1; tentativaAtual <= QuantidadeMaximaTentativas; tentativaAtual++)
+        // Loop externo responsável por reiniciar uma nova partida caso o jogador queira jogar novamente
+        while (true)
         {
-            Console.WriteLine();
-            Console.WriteLine($"Tentativa {tentativaAtual} de {QuantidadeMaximaTentativas}");
+            // Sorteia uma palavra aleatória da lista
+            string palavraSecreta = SortearPalavra(palavras);
 
-            // Obtém uma tentativa válida do usuário
-            string tentativa = ObterTentativaValida();
+            // Exibe título e instruções do jogo
+            ExibirCabecalho();
 
-            // Exibe o resultado colorido da tentativa
-            ExibirTentativaColorida(tentativa, palavraSecreta);
+            // Variável usada para controlar se o jogador venceu a partida atual
+            bool jogadorAcertou = false;
 
-            // Verifica condição de vitória
-            if (tentativa == palavraSecreta)
+            // Loop principal do jogo (controle de tentativas)
+            for (int tentativaAtual = 1; tentativaAtual <= QuantidadeMaximaTentativas; tentativaAtual++)
             {
                 Console.WriteLine();
+                Console.WriteLine($"Tentativa {tentativaAtual} de {QuantidadeMaximaTentativas}");
 
-                // Cor verde para indicar sucesso
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.WriteLine("Parabéns! Você acertou a palavra secreta!");
+                // Obtém uma tentativa válida do usuário
+                string tentativa = ObterTentativaValida();
+
+                // Exibe o resultado colorido da tentativa
+                ExibirTentativaColorida(tentativa, palavraSecreta);
+
+                // Verifica condição de vitória
+                if (tentativa == palavraSecreta)
+                {
+                    Console.WriteLine();
+
+                    // Cor verde para indicar sucesso
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.WriteLine("Parabéns! Você acertou a palavra secreta!");
+                    Console.ResetColor();
+
+                    // Marca que o jogador venceu para evitar mostrar a mensagem de derrota no fim da rodada
+                    jogadorAcertou = true;
+
+                    // Interrompe apenas o loop das tentativas, mantendo o programa ativo para perguntar se deseja jogar novamente
+                    break;
+                }
+            }
+
+            // Caso o jogador use todas as tentativas sem acertar
+            if (!jogadorAcertou)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine("Que pena! Você perdeu.");
                 Console.ResetColor();
 
-                Console.WriteLine("Pressione ENTER para sair...");
-                Console.ReadLine();
-                return; // Encerra o programa após vitória
+                // Mostra a palavra correta
+                Console.WriteLine($"A palavra secreta era: {palavraSecreta}");
             }
+
+            Console.WriteLine();
+
+            // Pergunta ao jogador se ele deseja iniciar uma nova partida
+            Console.Write("Deseja jogar novamente? (S/N): ");
+            string? resposta = Console.ReadLine();
+
+            // Normaliza a resposta para facilitar a comparação
+            string respostaTratada = resposta?.Trim().ToUpper() ?? "N";
+
+            // Se a resposta for diferente de S, o loop externo é encerrado e o programa finaliza
+            if (respostaTratada != "S")
+                break;
         }
 
-         // Caso o jogador use todas as tentativas sem acertar
-        Console.WriteLine();
-        Console.ForegroundColor = ConsoleColor.DarkRed;
-        Console.WriteLine("Que pena! Você perdeu.");
-        Console.ResetColor();
-
-        // Mostra a palavra correta
-        Console.WriteLine($"A palavra secreta era: {palavraSecreta}");
         Console.WriteLine("Pressione ENTER para sair...");
         Console.ReadLine();
-
     }
 
     // Exibe o cabeçalho e instruções do jogo
@@ -86,6 +112,9 @@ class Program
         Console.WriteLine("Vermelho escuro = letra inexistente");
         Console.WriteLine("Amarelo escuro  = letra existe, mas em outra posição");
         Console.WriteLine("Verde escuro    = letra correta na posição correta");
+        Console.WriteLine();
+        Console.WriteLine("Formato visual:");
+        Console.WriteLine("[ A ] = quadrado da letra avaliada");
     }
 
     // Sorteia uma palavra aleatória da lista
@@ -155,11 +184,14 @@ class Program
         // Percorre cada letra da tentativa
         for (int i = 0; i < tentativa.Length; i++)
         {
-            // Define a cor da letra
-            Console.ForegroundColor = cores[i];
+            // Define a cor de fundo do quadrado para criar o efeito visual parecido com o Wordle
+            Console.BackgroundColor = cores[i];
 
-            // Exibe a letra
-            Console.Write(tentativa[i]);
+            // Define a cor da letra dentro do quadrado para melhorar a leitura
+            Console.ForegroundColor = ConsoleColor.White;
+
+            // Exibe a letra em formato de quadrado
+            Console.Write($" {tentativa[i]} ");
 
             // Reseta a cor para não afetar o restante do console
             Console.ResetColor();
