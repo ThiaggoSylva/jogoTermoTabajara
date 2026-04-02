@@ -24,7 +24,22 @@ class Program
             "FESTA",
             "PRAIA",
             "MOUSE",
-            "VERDE"
+            "VERDE",
+            "MANGA",
+            "ROSAS",
+            "GATOS",
+            "CACHO",
+            "FELIZ",
+            "AMIGO",
+            "SONHO",
+            "MUNDO",
+            "FRASE",
+            "CHAVE",
+            "PILHA",
+            "BOLSA",
+            "FUMAR",
+
+
         };
 
         // Loop externo responsável por reiniciar uma nova partida caso o jogador queira jogar novamente
