@@ -50,11 +50,17 @@ Com cores aplicadas diretamente no console 🎨
 ## 🏗️ Estrutura do Projeto
 
 Termo.ConsoleApp
+
 ├── Program.cs
+
 ├── JogoTermo.cs
+
 ├── PalavraService.cs
+
 ├── ValidadorEntrada.cs
+
 ├── AvaliadorTentativa.cs
+
 └── Tabuleiro.cs
 
 
