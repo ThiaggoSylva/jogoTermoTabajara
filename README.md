@@ -37,7 +37,9 @@ O projeto foi estruturado com foco em:
 O jogo simula um tabuleiro estilo Wordle:
 
 [ ] [ ] [ ] [ ] [ ]
+
 [ T ] [ E ] [ R ] [ M ] [ O ]
+
 [ ] [ ] [ ] [ ] [ ]
 
 
